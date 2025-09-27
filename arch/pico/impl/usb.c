@@ -2,13 +2,11 @@
 #include "usb/descriptors.c"
 #include "pico/unique_id.h"
 
-void _impl_hid_init(void)
-{
+void _impl_hid_init(void) {
   tusb_init();
 }
 
-void _impl_hid_inputReportKonamiCloud(void)
-{
+void _impl_hid_inputReportKonamiCloud(void) {
 #if defined(KONAMI_CLOUD_ENABLED)
   static USB_InputReport_KonamiCloud_t input;
 
@@ -18,26 +16,20 @@ void _impl_hid_inputReportKonamiCloud(void)
 #endif
 }
 
-void _impl_hid_inputReportKeyboard(void)
-{
+void _impl_hid_inputReportKeyboard(void) {
   static USB_InputReport_Keyboard_t input;
   memset(&input, 0, sizeof(input));
   CALLBACK_OnKeyboardInputRequest(&input);
   uint8_t keycodes[] = BUTTONS_KEYBOARD_DEFINITION;
 
   uint8_t kb_report[32] = {0};
-  for (int i = 0; i < (BUTTONS_ACTIVE + 4); i++)
-  {
-    if ((input.buttons >> i) % 2 == 1)
-    {
+  for (int i = 0; i < (BUTTONS_ACTIVE + 4); i++) {
+    if ((input.buttons >> i) % 2 == 1) {
       uint8_t bit = keycodes[i] % 8;
       uint8_t byte = (keycodes[i] / 8) + 1;
-      if (i >= 240 && i <= 247)
-      {
+      if (i >= 240 && i <= 247) {
         kb_report[0] |= (1 << bit);
-      }
-      else if (byte > 0 && byte <= 31)
-      {
+      } else if (byte > 0 && byte <= 31) {
         kb_report[byte] |= (1 << bit);
       }
     }
@@ -45,8 +37,7 @@ void _impl_hid_inputReportKeyboard(void)
   tud_hid_n_report(0x00, 0x02, &kb_report, sizeof(kb_report));
 }
 
-void _impl_hid_inputReportUSBemani(void)
-{
+void _impl_hid_inputReportUSBemani(void) {
   static USB_InputReport_USBemani_t input;
 
   memset(&input, 0, sizeof(input));
@@ -62,24 +53,20 @@ uint16_t _impl_hid_handleInputReport(uint8_t *buffer) {
     CALLBACK_OnKonamiCloudInputRequest(input);
     return sizeof(USB_InputReport_KonamiCloud_t);
 #endif
-  } else if (_usb_status.mode == USB_DeviceType_Keyboard) {
+  } 
+  if (_usb_status.mode == USB_DeviceType_Keyboard) {
     uint8_t keycodes[] = BUTTONS_KEYBOARD_DEFINITION;
     static USB_InputReport_Keyboard_t input;
     memset(&input, 0, sizeof(input));
     CALLBACK_OnKeyboardInputRequest(&input);
     uint8_t kb_report[32] = {0};
-    for (int i = 0; i < (BUTTONS_ACTIVE + 4); i++)
-    {
-      if ((input.buttons >> i) % 2 == 1)
-      {
+    for (int i = 0; i < (BUTTONS_ACTIVE + 4); i++) {
+      if ((input.buttons >> i) % 2 == 1) {
         uint8_t bit = keycodes[i] % 8;
         uint8_t byte = (keycodes[i] / 8) + 1;
-        if (i >= 240 && i <= 247)
-        {
+        if (i >= 240 && i <= 247) {
           kb_report[0] |= (1 << bit);
-        }
-        else if (byte > 0 && byte <= 31)
-        {
+        } else if (byte > 0 && byte <= 31) {
           kb_report[byte] |= (1 << bit);
         }
       }
@@ -94,10 +81,8 @@ uint16_t _impl_hid_handleInputReport(uint8_t *buffer) {
 }
 
 // Sends the response to a previously received command feature report.
-uint16_t _impl_hid_handleFeatureReport(uint8_t *buffer)
-{
-  if (!_command.ready)
-  {
+uint16_t _impl_hid_handleFeatureReport(uint8_t *buffer) {
+  if (!_command.ready) {
     return 0;
   }
 
@@ -112,10 +97,8 @@ uint16_t _impl_hid_handleFeatureReport(uint8_t *buffer)
 }
 
 // Called when an output report is received from the host.
-void _impl_hid_setOutputReport(uint8_t const *buffer, uint16_t bufsize)
-{
-  if (bufsize == sizeof(USB_OutputReport_t))
-  {
+void _impl_hid_setOutputReport(uint8_t const *buffer, uint16_t bufsize) {
+  if (bufsize == sizeof(USB_OutputReport_t)) {
     static USB_OutputReport_t output;
     memcpy(&output, buffer, sizeof(USB_OutputReport_t));
     CALLBACK_OnUSBOutputAvailable(&output);
@@ -123,10 +106,8 @@ void _impl_hid_setOutputReport(uint8_t const *buffer, uint16_t bufsize)
 }
 
 // Called when a command feature report is received from the host.
-void _impl_hid_setFeatureReport(uint8_t const *buffer, uint16_t bufsize)
-{
-  if (bufsize == sizeof(USB_CommandRequest_t))
-  {
+void _impl_hid_setFeatureReport(uint8_t const *buffer, uint16_t bufsize) {
+  if (bufsize == sizeof(USB_CommandRequest_t)) {
     memcpy(&_command.request, buffer, sizeof(USB_CommandRequest_t));
     memset(&_command.response, 0, sizeof(USB_CommandResponse_t));
     CALLBACK_OnUSBCommandAvailable(&_command);
@@ -135,51 +116,47 @@ void _impl_hid_setFeatureReport(uint8_t const *buffer, uint16_t bufsize)
 
 // Standard task for building input reports.
 // TinyUSB appears to handle output reports using the same handler as the output ControlRequest handler?
-void _impl_hid_dataHandlerTask(void)
-{
+void _impl_hid_dataHandlerTask(void) {
   if (tud_suspended())
     tud_remote_wakeup();
 
-  if (tud_hid_ready())
-  {
+
+  if (tud_hid_ready()) {
     if (_usb_status.mode == USB_DeviceType_KonamiCloud)
       _impl_hid_inputReportKonamiCloud();
-    if (_usb_status.mode == USB_DeviceType_Keyboard)
-      _impl_hid_inputReportKeyboard();
+    else if (_usb_status.mode == USB_DeviceType_Keyboard)
+    _impl_hid_inputReportKeyboard();
     else
       _impl_hid_inputReportUSBemani();
   }
 }
 
 // TinyUSB event handler for USB_Connect events.
-void tud_mount_cb(void) {}
+void tud_mount_cb(void) { }
 
 // TinyUSB event handler for USB_Disconnect events.
-void tud_umount_cb(void) {}
+void tud_umount_cb(void) { }
 
 // TinyUSB event handler for USB_Suspend events.
-void tud_suspend_cb(bool remote_wakeup_en) {}
+void tud_suspend_cb(bool remote_wakeup_en) { }
 
 // TinyUSB event handler for USB_WakeUp events.
-void tud_resume_cb(void) {}
+void tud_resume_cb(void) { }
 
 //// TinyUSB event handlers for USB_ControlRequest events.
 // Fill the buffer report and return the length.
 // TODO:  This code might not be needed. Most examples return 0.
 //        This is populated because LUFA handles ControlRequest events in this fashion.
 uint16_t tud_hid_get_report_cb(
-    uint8_t instance,
-    uint8_t report_id,
-    hid_report_type_t report_type,
-    uint8_t *buffer,
-    uint16_t reqlen)
-{
-  if (report_type == HID_REPORT_TYPE_INPUT)
-  {
+  uint8_t instance,
+  uint8_t report_id,
+  hid_report_type_t report_type,
+  uint8_t *buffer,
+  uint16_t reqlen
+) {
+  if (report_type == HID_REPORT_TYPE_INPUT) {
     return _impl_hid_handleInputReport(buffer);
-  }
-  else if (report_type == HID_REPORT_TYPE_FEATURE)
-  {
+  } else if (report_type == HID_REPORT_TYPE_FEATURE) {
     return _impl_hid_handleFeatureReport(buffer);
   }
 
@@ -188,80 +165,64 @@ uint16_t tud_hid_get_report_cb(
 
 // Receive and process reports.
 void tud_hid_set_report_cb(
-    uint8_t instance,
-    uint8_t report_id,
-    hid_report_type_t report_type,
-    uint8_t const *buffer,
-    uint16_t bufsize)
-{
+  uint8_t instance,
+  uint8_t report_id,
+  hid_report_type_t report_type,
+  uint8_t const *buffer,
+  uint16_t bufsize
+) {
   // TODO:  HID reports work if we check `report_type` to confirm an output report.
   //        However, this only works for SET_REPORT requests and not URB Interrupt Outs.
   //        Why does this differ?
-  if (report_type == HID_REPORT_TYPE_OUTPUT)
-  {
+  if (report_type == HID_REPORT_TYPE_OUTPUT) {
     // Strip report ID before passing to the output handler.
     _impl_hid_setOutputReport(++buffer, --bufsize);
-  }
-  else if (report_type == HID_REPORT_TYPE_FEATURE)
-  {
+  } else if (report_type == HID_REPORT_TYPE_FEATURE) {
     _impl_hid_setFeatureReport(buffer, bufsize);
   }
 }
 
-const uint8_t *tud_descriptor_device_cb(void)
-{
+const uint8_t *tud_descriptor_device_cb(void) {
   return (const uint8_t *)(_usb_status.device_descriptor);
 }
 
-const uint8_t *tud_hid_descriptor_report_cb(uint8_t index)
-{
+const uint8_t *tud_hid_descriptor_report_cb(uint8_t index) {
   return (const uint8_t *)(_usb_status.report_descriptor);
 }
 
-const uint8_t *tud_descriptor_configuration_cb(uint8_t index)
-{
+const uint8_t *tud_descriptor_configuration_cb(uint8_t index) {
   return (const uint8_t *)(_usb_status.config_descriptor);
 }
 
-const uint16_t *tud_descriptor_string_cb(uint8_t index, uint16_t langid)
-{
-  const USB_STRING *string = NULL;
+const uint16_t *tud_descriptor_string_cb(uint8_t index, uint16_t langid) {
+  const USB_STRING   *string = NULL;
   register uint8_t stridx;
 
   uint8_t type = index & StringTypeMask;
-  if (type & StringType_LightsRGB)
-  {
-    type = StringType_LightsRGB;
+  if (type & StringType_LightsRGB) {
+    type   = StringType_LightsRGB;
     stridx = index & StringIndexMask_RGB;
-  }
-  else
-  {
+  } else {
     stridx = index & StringIndexMask;
   }
 
-  switch (type)
-  {
+  switch(type) {
   case StringType_USBStandard:
-    if (stridx == StringID_Serial)
-    {
+    if (stridx == StringID_Serial) {
       static bool generated = false;
       static uint16_t serial[1 + (2 * PICO_UNIQUE_BOARD_ID_SIZE_BYTES)];
 
-      if (!generated)
-      {
+      if (!generated) {
         generated = true;
         char id[2 * PICO_UNIQUE_BOARD_ID_SIZE_BYTES + 1];
         pico_get_unique_board_id_string(id, sizeof(id));
         serial[0] = (TUSB_DESC_STRING << 8) | (2 + strlen(id) * 2);
-        for (size_t i = 0; i < strlen(id); i++)
-        {
+        for (size_t i = 0; i < strlen(id); i++) {
           serial[1 + i] = id[i];
         }
       }
-      string = (USB_STRING *)serial;
-    }
-    else
-    {
+      string = (USB_STRING*) serial;
+    } else {
       string = String_USB[stridx];
     }
     break;
