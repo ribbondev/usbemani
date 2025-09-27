@@ -2,6 +2,7 @@
 typedef enum {
   USB_DeviceType_USBemani,
   USB_DeviceType_KonamiCloud,
+  USB_DeviceType_Keyboard,
 } USB_DeviceType_t;
 
 typedef enum {
@@ -23,28 +24,30 @@ typedef enum {
 
 typedef enum {
   /* Fixed IDs */
-  StringID_None     = 0x00,
-  StringID_Language = 0x00,
+  StringID_None                 = 0x00,
+  StringID_Language             = 0x00,
   StringID_Vendor_USBemani      = 0x01,
   StringID_Product_USBemani     = 0x02,
   StringID_Vendor_KonamiCloud   = 0x03,
   StringID_Product_KonamiCloud  = 0x04,
-  StringID_Serial   = 0x0F,
+  StringID_Vendor_Keyboard      = 0x05,
+  StringID_Product_Keyboard     = 0x06,
+  StringID_Serial               = 0x0F,
   /* Types */
-  StringType_USBStandard = 0x00,
-  StringType_Button      = 0x10,
-  StringType_Encoder     = 0x20,
-  StringType_Axis        = 0x30,
-  StringType_LightsBasic = 0x40,
-  StringType_LightsRGB   = 0x80,
-  StringTypeMask         = 0xF0,
+  StringType_USBStandard        = 0x00,
+  StringType_Button             = 0x10,
+  StringType_Encoder            = 0x20,
+  StringType_Axis               = 0x30,
+  StringType_LightsBasic        = 0x40,
+  StringType_LightsRGB          = 0x80,
+  StringTypeMask                = 0xF0,
   /* Index Masks for Types */
-  StringIndexMask     = 0x0F,
-  StringIndexMask_RGB = 0x7F,
+  StringIndexMask               = 0x0F,
+  StringIndexMask_RGB           = 0x7F,
 } USB_StringType_t;
 
 typedef enum {
-  ReportID_Input = 0x01,
+  ReportID_Input                = 0x01,
   ReportID_Output,
-  ReportID_Command = 0xFF
+  ReportID_Command              = 0xFF
 } USB_ReportID_t;

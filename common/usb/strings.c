@@ -10,12 +10,21 @@ const USB_STRING USB_ATTRIBUTES String_USBVendor_USBemani  =
   STRING_DESCRIPTOR(WIDE_STRING(USB_STRING_VENDOR_USBEMANI));
 const USB_STRING USB_ATTRIBUTES String_USBProduct_USBemani =
   STRING_DESCRIPTOR(WIDE_STRING(USB_STRING_PRODUCT_USBEMANI));
+
 #if defined(KONAMI_CLOUD_ENABLED)
 const USB_STRING USB_ATTRIBUTES String_USBVendor_KonamiCloud  =
   STRING_DESCRIPTOR(WIDE_STRING(USB_STRING_VENDOR_KONAMI_CLOUD));
 const USB_STRING USB_ATTRIBUTES String_USBProduct_KonamiCloud =
   STRING_DESCRIPTOR(WIDE_STRING(USB_STRING_PRODUCT_KONAMI_CLOUD));
 #endif
+
+#if defined(KEYBOARD_ENABLED)
+const USB_STRING USB_ATTRIBUTES String_USBVendor_Keyboard  =
+  STRING_DESCRIPTOR(WIDE_STRING(USB_STRING_VENDOR_KEYBOARD));
+const USB_STRING USB_ATTRIBUTES String_USBProduct_Keyboard =
+  STRING_DESCRIPTOR(WIDE_STRING(USB_STRING_PRODUCT_KEYBOARD));
+#endif
+
 /* Lookup Table */
 const USB_STRING * const String_USB[] USB_ATTRIBUTES = {
   [StringID_Language]  = &String_USBLanguage,
@@ -24,6 +33,11 @@ const USB_STRING * const String_USB[] USB_ATTRIBUTES = {
 #if defined(KONAMI_CLOUD_ENABLED)
   [StringID_Vendor_KonamiCloud]  = &String_USBVendor_KonamiCloud,
   [StringID_Product_KonamiCloud] = &String_USBProduct_KonamiCloud,
+#endif
+
+#if defined(KEYBOARD_ENABLED)
+  [StringID_Vendor_Keyboard]  = &String_USBVendor_Keyboard,
+  [StringID_Product_Keyboard] = &String_USBProduct_Keyboard,
 #endif
 };
 

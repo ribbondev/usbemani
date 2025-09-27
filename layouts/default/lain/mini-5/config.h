@@ -28,6 +28,8 @@
 /*** Button Combinations ***/
 #define BUTTON_COMBO_ARCH_RESET     0, 1
 #define BUTTON_COMBO_KONAMI_CLOUD   7, 8
+#define BUTTON_COMBO_KEYBOARD       9, 10
+
 
 /*** Quirks ***/
 #define QUIRK_IIDX_LR2_BUTTON_COMBO 1

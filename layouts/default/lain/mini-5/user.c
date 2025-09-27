@@ -15,22 +15,29 @@ RGB_Color_t getButtonColor(uint8_t button) {
   }
   if (button >= 7) {
     // E1-E4
-    color.red = value / 4;
-    color.blue = value;
+    color.red = value / 2;
+    color.green = value / 2;
+    color.blue = value / 2;
   } else if (button % 2 == 0) {
     // White keys (
-    color.red = value;
+    color.red = value / 2;
+    color.green = value / 2;
     color.blue = value / 2;
   } else {
     // Black keys
-    color.blue = value;
-    color.green = value / 4;
+    color.red = value / 2;
+    color.green = value / 2;
+    color.blue = value / 2;
   }
   return color;
 }
 
 void CALLBACK_OnRGBDrawFallback() {
+
+    const RGB_Color_t TT = {.r=255,.g=255,.b=255};
+
   // Clear the channel
+  
   RGB_ClearAll(0);
   // Draw the keys
   for (uint8_t i = 0; i < 7; i++) {
@@ -44,11 +51,10 @@ void CALLBACK_OnRGBDrawFallback() {
     if (Button_Get(7 + i))
       RGB_Set(0, offsetKeys + i, color);
   }
-  // Set saturation and value to max
-  Effect_SetSaturation(255);
-  Effect_SetValue(255);
-  // Draw the turntable rainbow ring
-  EffectRainbow_Draw(&rainbow, Encoder_PhysicalPercent(0));
+
+  //Set turntable Color
+  RGB_SetRange(0, offsetKeys + offsetE, CONTROLLER_RGB_LEDS_TURNTABLE, TT);
+
 }
 
 void CALLBACK_OnRGBDrawUSB(USB_OutputReport_t *output) {

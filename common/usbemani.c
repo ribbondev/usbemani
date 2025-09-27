@@ -45,6 +45,8 @@ int main(void) {
   Arch_BootloaderCheck();
   // Check if Konami Cloud descriptors are requested
   HID_KonamiCloudCheck();
+  // Check if Keyboard descriptors are requested
+  HID_KeyboardCheck();
 
   // Call user hook when hardware is ready
   if (CALLBACK_OnHardwareReady)
