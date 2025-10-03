@@ -11,7 +11,7 @@
 
 /*** Encoders ***/
 #define ENCODERS_ACTIVE 1
-#define ENCODER_PPR     36
+#define ENCODER_PPR     72
 
 /*** RGB ***/
 #define RGB_CHANNELS_ACTIVE   1
