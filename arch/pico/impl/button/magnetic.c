@@ -1,11 +1,12 @@
 repeating_timer_t _button_timer;
 
 static bool down[BUTTONS_ACTIVE] = { false };
+static const uint8_t _analog_order[]  = { ANALOG_CHANNEL_ORDER };
 
 void _impl_button_poll(void) {
   for (int i = 0; i < BUTTONS_ACTIVE; i++) {
     // Get the filtered analog value for this button.
-    const uint8_t value = Analog_Get(i);
+    const uint8_t value = Analog_Get(_analog_order[i]);
     // Determine if the button is pressed.
     if (down[i] && value > BUTTON_UP_THRESHOLD) {
       down[i] = false;

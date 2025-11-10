@@ -12,24 +12,56 @@ Effect_Rainbow_t rainbow = New_EffectRainbow(0, offsetKeys + offsetE, CONTROLLER
 );
 
 void CALLBACK_OnRGBDrawFallback() {
-  const RGB_Color_t ttred = {.r=255,.g=0,.b=0};
+  const RGB_Color_t white = {.r=128,.g=128,.b=128};
   const RGB_Color_t red   = {.r=128};
+
+// Buttons 1-8 are handled via the shift register, for the remaining three we need to turn them on manually
+for (uint8_t i = 16; i < 19; i++) {
+    gpio_init(i);
+    gpio_set_dir(i, GPIO_OUT);
+}
+
+if (Button_Get(8)){
+    gpio_put(18, 1); 
+}
+else {
+    gpio_put(18, 0);
+}
+
+if (Button_Get(9)){
+    gpio_put(17, 1); 
+  }
+else {
+    gpio_put(17, 0);
+}
+
+if (Button_Get(10)){
+    gpio_put(16, 1); 
+}
+else {
+    gpio_put(16, 0);
+}
+
+
 
   // Clear the channel
   RGB_ClearAll(0);
   // Draw the keys
   for (uint8_t i = 0; i < 7; i++) {
     if (Button_Get(i))
-      RGB_SetRange(0, (i * CONTROLLER_RGB_LEDS_PER_KEY), CONTROLLER_RGB_LEDS_PER_KEY, (i % 2 ? red : red));
+      RGB_SetRange(0, (i * CONTROLLER_RGB_LEDS_PER_KEY), CONTROLLER_RGB_LEDS_PER_KEY, (i % 2 ? red : white));
   }
   // Draw E1-E4, also white
   for (uint8_t i = 0; i < 4; i++) {
     if (Button_Get(7 + i))
-      RGB_Set(0, offsetKeys + i, red);
+      RGB_Set(0, offsetKeys + i, white);
   }
-
+  
+  // Set saturation and value to max
+  Effect_SetSaturation(255);
+  Effect_SetValue(255);
   // Draw the turntable rainbow ring
-  RGB_SetRange(0, offsetKeys + offsetE, 12, ttred);
+  EffectRainbow_Draw(&rainbow, Encoder_PhysicalPercent(0));
 }
 
 void CALLBACK_OnRGBDrawUSB(USB_OutputReport_t *output) {
