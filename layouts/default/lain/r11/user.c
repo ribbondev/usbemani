@@ -54,12 +54,8 @@ void CALLBACK_OnRGBDrawFallback() {
 void CALLBACK_OnRGBDrawUSB(USB_OutputReport_t *output) {
   RGB_ClearAll(0);
   // Draw the 7 keys
-  for (int i = 0; i < 7; i++) {
+  for (int i = 0; i < 11; i++) {
     RGB_SetRange(0, (i * CONTROLLER_RGB_LEDS_PER_KEY), CONTROLLER_RGB_LEDS_PER_KEY, output->rgb[i]);
-  }
-  // Draw E1-E4
-  for (uint8_t i = 0; i < 4; i++) {
-    RGB_Set(0, offsetKeys + i, output->rgb[7+i]);
   }
   // Draw TT
   RGB_SetRange(0, offsetKeys + offsetE, CONTROLLER_RGB_LEDS_TURNTABLE, output->rgb[7+4]);
