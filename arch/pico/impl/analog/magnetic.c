@@ -1,5 +1,6 @@
 // Jump table entry, used for process unrolling.
 #define _ANALOG_JUMP_TABLE(x) case x: if (x < ANALOG_CHANNELS_ACTIVE) _impl_analog_processChannel(x); return;
+const uint8_t _ANALOG_CHANNEL_ORDER[] = { ANALOG_CHANNEL_ORDER };
 
 #if defined(ANALOG_CHANNELS_ACTIVE) && (ANALOG_CHANNELS_ACTIVE > 0)
 _impl_magnetic_t _magnetic[ANALOG_CHANNELS_ACTIVE];
@@ -41,8 +42,13 @@ static inline void _impl_analog_processChannel(const uint8_t i) {
   _analogs[i].raw = (raw - min) * 255 / (max - min) ^ -invert;
 
   // Switch the ADC to the next channel
-  const uint8_t next_index = (i+1) % ANALOG_CHANNELS_ACTIVE;
-  gpio_put_masked(ANALOG_MAGNETIC_PIN_MASK, next_index << 1 & ANALOG_MAGNETIC_PIN_MASK);
+  const uint8_t next_index = (_analogs_index + 1) % ANALOG_CHANNELS_ACTIVE;
+
+  // Look up physical channel order based on config
+  const uint8_t ordered_channel_number = _ANALOG_CHANNEL_ORDER[next_index];
+
+  // Switch the ADC to the next channel
+  gpio_put_masked(ANALOG_MAGNETIC_PIN_MASK, ordered_channel_number << 1 & ANALOG_MAGNETIC_PIN_MASK);
   _analogs_index = next_index;
 
   // Flag the highest bit of the averaging index, to indicate a new ADC read is ready
