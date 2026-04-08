@@ -1,13 +1,16 @@
 #pragma once
 
-// Physical analog channel order on mux
 #define ANALOG_DRIVER magnetic
 #define ANALOG_CHANNELS_AVAILABLE 7
-#define DUALCONTROL_TRANSISTOR_PINS 24, 23, 25, 22, 26, 21, 27
+// Physical analog channel order on mux
 #define ANALOG_CHANNEL_ORDER 5, 6, 11, 7, 10, 8, 9
 
 #define BUTTON_DRIVER dualcontrol
 #define DUALCONTROL
+// Corresponding transistor gate pins to set so dualcontrol boards get 5V
+#define DUALCONTROL_TRANSISTOR_PINS 24, 23, 25, 22, 26, 21, 27
+
+
 #define BUTTONS_AVAILABLE 11
 #define BUTTON_PINS 20, 14, 19, 15, 18, 16, 17, 9, 8, 7, 6
 
