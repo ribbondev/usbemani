@@ -1,6 +1,8 @@
 #pragma once
 #define KONAMI_CLOUD_ENABLED            1
-#define KEYBOARD_ENABLED            1
+#define KEYBOARD_ENABLED                1
+#define LR2_ENABLED                     1
+
 
 
 #define ENCODER_AXIS_RESOLUTION         8

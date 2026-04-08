@@ -3,6 +3,7 @@ typedef enum {
   USB_DeviceType_USBemani,
   USB_DeviceType_KonamiCloud,
   USB_DeviceType_Keyboard,
+  USB_DeviceType_LR2,
 } USB_DeviceType_t;
 
 typedef enum {
@@ -32,6 +33,8 @@ typedef enum {
   StringID_Product_KonamiCloud  = 0x04,
   StringID_Vendor_Keyboard      = 0x05,
   StringID_Product_Keyboard     = 0x06,
+  StringID_Vendor_LR2           = 0x07,
+  StringID_Product_LR2          = 0x08,
   StringID_Serial               = 0x0F,
   /* Types */
   StringType_USBStandard        = 0x00,

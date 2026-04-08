@@ -6,11 +6,11 @@
 
 /*** Analogs ***/
 #define ANALOG_CHANNELS_ACTIVE    11
-#define MUX_S0 1
-#define MUX_S1 2
+#define MUX_S0 5
+#define MUX_S1 4
 #define MUX_S2 3
-#define MUX_S3 4
-#define ANALOG_MAGNETIC_ADC_INPUT 2    // GPIO pin 28 for ADC input
+#define MUX_S3 2
+#define ANALOG_MAGNETIC_ADC_INPUT 7    // GPIO pin 47 for ADC input (RP2350B Base pin is 40)
 
 /*** Buttons ***/
 #define BUTTONS_ACTIVE  11
@@ -24,9 +24,9 @@
 
 
 /*** RGB ***/
-#define RGB_CHANNELS_ACTIVE   1
+#define RGB_CHANNELS_ACTIVE   3
 #define RGB_LED_TYPE          WS2812
-#define RGB_LEDS_PER_CHANNEL  (7 * CONTROLLER_RGB_LEDS_PER_KEY) + (4 * 1) + (CONTROLLER_RGB_LEDS_TURNTABLE)
+#define RGB_LEDS_PER_CHANNEL  (7 * CONTROLLER_RGB_LEDS_PER_KEY) + (4 * 7), 12, 12
 
 /*** Chain Inclusion ***/
 #include_next "config.h"

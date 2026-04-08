@@ -1,0 +1,3 @@
+TARGET_ARCH = pico
+PICO_BOARD = dcfish3
+PICO_PLATFORM = rp2350

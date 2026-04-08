@@ -1,6 +1,6 @@
-#include "usb/descriptors/konamicloud.iidx.h"
+#include "usb/descriptors/lr2.iidx.h"
 
-const USB_REPORT USB_ATTRIBUTES KonamiCloud_Report[] = {
+const USB_REPORT USB_ATTRIBUTES LR2_Report[] = {
   0x05, 0x01,        // Usage Page (Generic Desktop Ctrls)
   0x09, 0x04,        // Usage (Joystick)
   0xA1, 0x01,        // Collection (Application)
@@ -34,19 +34,11 @@ const USB_REPORT USB_ATTRIBUTES KonamiCloud_Report[] = {
   0xC0,              // End Collection
 };
 
-#if (BUTTONS_ACTIVE > 9)
-#include _KC_INCLUDE(CONTROLLER_TYPE, premium_model.c)
-#else
-#include _KC_INCLUDE(CONTROLLER_TYPE, entry_model.c)
-#endif
 
-//  Default behavior:
-//  * Buttons: Buttons 1-7 directly mapped, 1 skip, E1-E4
-//  * Encoder: 0, directly mapped
-WEAK void CALLBACK_OnKonamiCloudInputRequest(USB_InputReport_KonamiCloud_t *input) {
+WEAK void CALLBACK_OnLR2InputRequest(USB_InputReport_LR2_t *input) {
   const uint16_t buttons = Button_GetAll();
-  input->buttons  = (buttons & 0x007F);
-  input->buttons |= (buttons & 0x0780) << 1;
+  ENCODER_EMIT direction1 = Encoder_Direction(0);
+  ENCODER_EMIT direction2 = Encoder_Direction(1);
+  input->buttons = buttons | ((direction1 >> 4) << BUTTONS_ACTIVE) | ((direction2 >> 4) << (BUTTONS_ACTIVE + 2));
 
-  input->turntable = (Encoder_LogicalPercent(0) + Encoder_LogicalPercent(1)) ^ 0xFF;
 }

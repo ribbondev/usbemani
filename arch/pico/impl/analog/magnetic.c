@@ -6,6 +6,17 @@ const uint8_t _ANALOG_CHANNEL_ORDER[] = { ANALOG_CHANNEL_ORDER };
 _impl_magnetic_t _magnetic[ANALOG_CHANNELS_ACTIVE];
 #endif
 
+#define AVG_WINDOW 5
+
+typedef struct {
+  uint16_t buf[AVG_WINDOW];
+  uint32_t sum;
+  uint8_t index;
+  uint8_t count; 
+} analog_avg_t;
+
+static analog_avg_t _avg[ANALOG_CHANNELS_ACTIVE];
+
 volatile uint8_t _analogs_index = 0;
 
 // Set calibration values for a specific analog channel.
@@ -22,24 +33,67 @@ int64_t _impl_analog_startConversion(alarm_id_t id, void *user_data) {
   return 0;
 }
 
-// Process a single ADC channel, switching to the next channel afterward.
+uint32_t mux_mask() {
+  uint32_t mask = 0;
+  mask = mask | (1 << MUX_S0);
+  mask = mask | (1 << MUX_S1);
+  mask = mask | (1 << MUX_S2);
+  mask = mask | (1 << MUX_S3);
+  return mask;
+}
+
+static void set_mux_gpio(uint8_t input) {
+  uint32_t s0 = (input & (1 << 0)) >> 0;
+  uint32_t s1 = (input & (1 << 1)) >> 1;
+  uint32_t s2 = (input & (1 << 2)) >> 2;
+  uint32_t s3 = (input & (1 << 3)) >> 3;
+
+  uint32_t mask = mux_mask();
+
+  uint32_t pins = 0;
+  pins = pins | (s0 << MUX_S0);
+  pins = pins | (s1 << MUX_S1);
+  pins = pins | (s2 << MUX_S2);
+  pins = pins | (s3 << MUX_S3);
+
+  gpio_put_masked(mask, pins);
+}
+
 static inline void _impl_analog_processChannel(const uint8_t i) {
   // Read the raw value from the ADC FIFO.
   uint16_t raw = adc_fifo_get();
 
-  // Keep a copy of the latest raw value.
-  _magnetic[i].raw = raw;
+  // Rolling average. Subtract oldest sample, store newest sample, advance the index.
+  analog_avg_t *a = &_avg[i];
+  a->sum -= a->buf[a->index];
+  a->buf[a->index] = raw;
+  a->sum += raw;
+  a->index = (a->index + 1) % AVG_WINDOW;
+  if (a->count < AVG_WINDOW) {
+    a->count++;
+  }
+
+  // Compute averaged value
+  uint16_t avg = a->sum / a->count;
+  _magnetic[i].raw = avg;
 
   // Clamp to pre-calibrated range.
   const uint16_t min = _settings.analog.min[i];
   const uint16_t max = _settings.analog.max[i];
   const bool invert = (_settings.analog.invert >> i) & 1;
 
-  if (raw < min) raw = min;
-  if (raw > max) raw = max;
+  uint16_t clamped = avg;
+  if (clamped < min) clamped = min;
+  if (clamped > max) clamped = max;
 
   // Scale the raw value from 16-bit to 8-bit.
-  _analogs[i].raw = (raw - min) * 255 / (max - min) ^ -invert;
+  uint8_t scaled = 0;
+  if (max > min) {
+    scaled = (clamped - min) * 255 / (max - min);
+  }
+
+  // inversion
+  _analogs[i].raw = invert ? (255 - scaled) : scaled;
 
   // Switch the ADC to the next channel
   const uint8_t next_index = (_analogs_index + 1) % ANALOG_CHANNELS_ACTIVE;
@@ -47,8 +101,8 @@ static inline void _impl_analog_processChannel(const uint8_t i) {
   // Look up physical channel order based on config
   const uint8_t ordered_channel_number = _ANALOG_CHANNEL_ORDER[next_index];
 
-  // Switch the ADC to the next channel
-  gpio_put_masked(ANALOG_MAGNETIC_PIN_MASK, ordered_channel_number << 1 & ANALOG_MAGNETIC_PIN_MASK);
+
+  set_mux_gpio(ordered_channel_number);
   _analogs_index = next_index;
 
   // Flag the highest bit of the averaging index, to indicate a new ADC read is ready
@@ -57,7 +111,7 @@ static inline void _impl_analog_processChannel(const uint8_t i) {
   // Start the next conversion after a brief delay
   alarm_pool_add_alarm_in_us(
     _impl_arch_alarmPool(),
-    10,
+    5,
     _impl_analog_startConversion,
     NULL,
     true
@@ -115,8 +169,8 @@ void _impl_analog_init(void) {
   adc_select_input(ANALOG_MAGNETIC_ADC_INPUT);
 
   // Setup switch pins
-  gpio_init_mask(ANALOG_MAGNETIC_PIN_MASK);
-  gpio_set_dir_out_masked(ANALOG_MAGNETIC_PIN_MASK);
+  gpio_init_mask(mux_mask());
+  gpio_set_dir_out_masked(mux_mask());
 
   // Start the interupt handler on the second core. We'll use a single-fire timer to achieve this
   alarm_pool_add_alarm_in_us(

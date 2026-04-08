@@ -6,7 +6,10 @@
 
 /*** Analogs ***/
 #define ANALOG_CHANNELS_ACTIVE    11
-#define ANALOG_MAGNETIC_PIN_MASK  0x1E // GPIO pins 1-4 for multiplexing
+#define MUX_S0 1
+#define MUX_S1 2
+#define MUX_S2 3
+#define MUX_S3 4
 #define ANALOG_MAGNETIC_ADC_INPUT 2    // GPIO pin 28 for ADC input
 
 /*** Buttons ***/

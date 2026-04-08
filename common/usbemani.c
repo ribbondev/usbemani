@@ -5,7 +5,6 @@ Settings_t _settings;
 
 TimerTick_t _timer;
 HSV_Color_t _effect_global;
-
 USB_LightingHelper_t USB_LightingHelper = {
   .active = 0,
 };
@@ -20,6 +19,33 @@ int main(void) {
   Flash_Read();
 
   // Initialize hardware
+  
+  //If PIO_BASE is defined shift the base GPIO for that PIO by 16
+  //RP2350B which has an extra bank of GPIO, to use a PIO on the pins beyond 32 this must be set
+#if defined(PIO0_BASE_SHIFT)
+ pio_set_gpio_base(pio0, 16);
+#endif
+
+#if defined(PIO1_BASE_SHIFT)
+ pio_set_gpio_base(pio1, 16);
+#endif
+
+  //DUAL CONTROL button boards need to get GND from the conventional button's GND spade connector. 
+  //the transistor connected to GND must be open for it to work (in the conventional implementation)
+  //can also be achieved in hardware by jumping switch ground to LED ground
+#if defined (DUALCONTROL_TRANSISTOR_PINS)
+  const uint8_t _DUALCONTROL_TRANSISTOR_PINS[] = { DUALCONTROL_TRANSISTOR_PINS };
+#endif
+
+ #if defined(MAGNETIC_BUTTON_TYPE) && (MAGNETIC_BUTTON_TYPE == DUALCONTROL)
+    for (uint8_t i = 0; i < ANALOG_CHANNELS_AVAILABLE; i++) {
+      gpio_init(_DUALCONTROL_TRANSISTOR_PINS[i]);
+      gpio_set_dir(_DUALCONTROL_TRANSISTOR_PINS[i], 1);
+      gpio_put(_DUALCONTROL_TRANSISTOR_PINS[i], 1);
+  }
+ #endif
+ 
+
   Arch_Init();
   Analog_Init();
   Button_Init();
@@ -47,6 +73,8 @@ int main(void) {
   HID_KonamiCloudCheck();
   // Check if Keyboard descriptors are requested
   HID_KeyboardCheck();
+  // Check if LR2 descriptors are requested
+  HID_LR2Check();
 
   // Call user hook when hardware is ready
   if (CALLBACK_OnHardwareReady)

@@ -2,13 +2,17 @@
 #include "usb/strings.c"
 #include "usb/descriptors/output.h"
 #include "usb/descriptors/usbemani.c"
+#if defined(LR2_ENABLED)
+#include "usb/descriptors/lr2.c"
+#include "common/usb/descriptors/lr2.iidx.13k.c"
+
+#endif
 #if defined(KONAMI_CLOUD_ENABLED)
 #include "usb/descriptors/konamicloud.c"
 #endif
 #if defined(KEYBOARD_ENABLED)
 #include "usb/descriptors/keyboard.c"
 #endif
-
 _usb_status_t _usb_status = {
   .mode = USB_DeviceType_USBemani,
   .device_descriptor = (USB_DEVICE *)&USBemani_Device,
@@ -28,6 +32,13 @@ void HID_SetMode(USB_DeviceType_t new_mode) {
     _usb_status.config_descriptor = (USB_CONFIG *)&KonamiCloud_Configuration;
     return;
 #endif
+#if defined(LR2_ENABLED)
+  case USB_DeviceType_LR2:
+    _usb_status.device_descriptor = (USB_DEVICE *)&LR2_Device,
+    _usb_status.report_descriptor = (USB_REPORT *)&LR2_Report,
+    _usb_status.config_descriptor = (USB_CONFIG *)&LR2_Configuration;
+    return;
+#endif
 #if defined(KEYBOARD_ENABLED)
   case USB_DeviceType_Keyboard:
     _usb_status.device_descriptor = (USB_DEVICE *)&Keyboard_Device,
@@ -35,6 +46,7 @@ void HID_SetMode(USB_DeviceType_t new_mode) {
     _usb_status.config_descriptor = (USB_CONFIG *)&Keyboard_Configuration;
     return;
 #endif
+
 
   // Default behavior: use USBemani descriptors
   default:

@@ -7,6 +7,9 @@
 #if defined(KONAMI_CLOUD_ENABLED)
 #include "usb/descriptors/konamicloud.h"
 #endif
+#if defined(LR2_ENABLED)
+#include "usb/descriptors/lr2.h"
+#endif
 #if defined(KEYBOARD_ENABLED)
 #include "usb/descriptors/keyboard.h"
 #endif
@@ -30,6 +33,8 @@ WEAK void CALLBACK_OnUSBemaniInputRequest(USB_InputReport_USBemani_t *input);
 WEAK void CALLBACK_OnKonamiCloudInputRequest(USB_InputReport_KonamiCloud_t *input);
 // When a Konami Cloud input packet is requested
 WEAK void CALLBACK_OnKeyboardInputRequest(USB_InputReport_Keyboard_t *input);
+// When a USB output packet is ready for processing
+WEAK void CALLBACK_OnLR2InputRequest(USB_InputReport_LR2_t *input);
 // When a USB output packet is ready for processing
 WEAK void CALLBACK_OnUSBOutputAvailable(USB_OutputReport_t *output);
 // When a USB command packet is ready for processing

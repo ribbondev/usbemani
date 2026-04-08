@@ -25,6 +25,13 @@ const USB_STRING USB_ATTRIBUTES String_USBProduct_Keyboard =
   STRING_DESCRIPTOR(WIDE_STRING(USB_STRING_PRODUCT_KEYBOARD));
 #endif
 
+#if defined(LR2_ENABLED)
+const USB_STRING USB_ATTRIBUTES String_USBVendor_LR2  =
+  STRING_DESCRIPTOR(WIDE_STRING(USB_STRING_VENDOR_LR2));
+const USB_STRING USB_ATTRIBUTES String_USBProduct_LR2 =
+  STRING_DESCRIPTOR(WIDE_STRING(USB_STRING_PRODUCT_LR2));
+#endif
+
 /* Lookup Table */
 const USB_STRING * const String_USB[] USB_ATTRIBUTES = {
   [StringID_Language]  = &String_USBLanguage,
@@ -38,6 +45,11 @@ const USB_STRING * const String_USB[] USB_ATTRIBUTES = {
 #if defined(KEYBOARD_ENABLED)
   [StringID_Vendor_Keyboard]  = &String_USBVendor_Keyboard,
   [StringID_Product_Keyboard] = &String_USBProduct_Keyboard,
+#endif
+
+#if defined(LR2_ENABLED)
+  [StringID_Vendor_LR2]  = &String_USBVendor_LR2,
+  [StringID_Product_LR2] = &String_USBProduct_LR2,
 #endif
 };
 
