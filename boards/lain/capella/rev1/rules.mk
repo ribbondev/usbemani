@@ -1,0 +1,4 @@
+TARGET_ARCH = pico
+
+PICO_BOARD = capella
+PICO_PLATFORM = rp2350

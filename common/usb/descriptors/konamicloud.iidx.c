@@ -48,5 +48,5 @@ WEAK void CALLBACK_OnKonamiCloudInputRequest(USB_InputReport_KonamiCloud_t *inpu
   input->buttons  = (buttons & 0x007F);
   input->buttons |= (buttons & 0x0780) << 1;
 
-  input->turntable = Encoder_LogicalPercent(0) ^ 0xFF;
+  input->turntable = (Encoder_LogicalPercent(0) + Encoder_LogicalPercent(1)) ^ 0xFF;
 }

@@ -2,6 +2,7 @@
 
 #define ANALOG_DRIVER magnetic
 #define ANALOG_CHANNELS_AVAILABLE 16
+#define ANALOG_CHANNEL_ORDER 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 
 #define BUTTON_DRIVER magnetic
 #define BUTTONS_AVAILABLE 11

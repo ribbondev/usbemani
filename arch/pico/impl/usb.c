@@ -16,6 +16,37 @@ void _impl_hid_inputReportKonamiCloud(void) {
 #endif
 }
 
+void _impl_hid_inputReportLR2(void) {
+#if defined(LR2_ENABLED)
+  static USB_InputReport_LR2_t input;
+
+  memset(&input, 0, sizeof(input));
+  CALLBACK_OnLR2InputRequest(&input);
+  tud_hid_report(ReportID_Input, &input, sizeof(input));
+#endif
+}
+
+void _impl_hid_inputReportKeyboard(void) {
+  static USB_InputReport_Keyboard_t input;
+  memset(&input, 0, sizeof(input));
+  CALLBACK_OnKeyboardInputRequest(&input);
+  uint8_t keycodes[] = BUTTONS_KEYBOARD_DEFINITION;
+
+  uint8_t kb_report[32] = {0};
+  for (int i = 0; i < (BUTTONS_ACTIVE + 4); i++) {
+    if ((input.buttons >> i) % 2 == 1) {
+      uint8_t bit = keycodes[i] % 8;
+      uint8_t byte = (keycodes[i] / 8) + 1;
+      if (i >= 240 && i <= 247) {
+        kb_report[0] |= (1 << bit);
+      } else if (byte > 0 && byte <= 31) {
+        kb_report[byte] |= (1 << bit);
+      }
+    }
+  }
+  tud_hid_n_report(0x00, 0x02, &kb_report, sizeof(kb_report));
+}
+
 void _impl_hid_inputReportUSBemani(void) {
   static USB_InputReport_USBemani_t input;
 
@@ -32,6 +63,33 @@ uint16_t _impl_hid_handleInputReport(uint8_t *buffer) {
     CALLBACK_OnKonamiCloudInputRequest(input);
     return sizeof(USB_InputReport_KonamiCloud_t);
 #endif
+  } 
+  if (_usb_status.mode == USB_DeviceType_LR2) {
+#if defined(LR2_ENABLED)
+    USB_InputReport_LR2_t *input = (USB_InputReport_LR2_t *)buffer;
+    CALLBACK_OnLR2InputRequest(input);
+    return sizeof(USB_InputReport_LR2_t);
+#endif
+  } 
+  if (_usb_status.mode == USB_DeviceType_Keyboard) {
+    uint8_t keycodes[] = BUTTONS_KEYBOARD_DEFINITION;
+    static USB_InputReport_Keyboard_t input;
+    memset(&input, 0, sizeof(input));
+    CALLBACK_OnKeyboardInputRequest(&input);
+    uint8_t kb_report[32] = {0};
+    for (int i = 0; i < (BUTTONS_ACTIVE + 4); i++) {
+      if ((input.buttons >> i) % 2 == 1) {
+        uint8_t bit = keycodes[i] % 8;
+        uint8_t byte = (keycodes[i] / 8) + 1;
+        if (i >= 240 && i <= 247) {
+          kb_report[0] |= (1 << bit);
+        } else if (byte > 0 && byte <= 31) {
+          kb_report[byte] |= (1 << bit);
+        }
+      }
+    }
+    memcpy(buffer, kb_report, sizeof(kb_report));
+    return sizeof(kb_report);
   } else {
     USB_InputReport_USBemani_t *input = (USB_InputReport_USBemani_t *)buffer;
     CALLBACK_OnUSBemaniInputRequest(input);
@@ -83,6 +141,10 @@ void _impl_hid_dataHandlerTask(void) {
   if (tud_hid_ready()) {
     if (_usb_status.mode == USB_DeviceType_KonamiCloud)
       _impl_hid_inputReportKonamiCloud();
+    else if (_usb_status.mode == USB_DeviceType_Keyboard)
+    _impl_hid_inputReportKeyboard();
+    else if (_usb_status.mode == USB_DeviceType_LR2)
+    _impl_hid_inputReportLR2();
     else
       _impl_hid_inputReportUSBemani();
   }

@@ -12,7 +12,7 @@ Effect_Rainbow_t rainbow = New_EffectRainbow(0, offsetKeys + offsetE, CONTROLLER
 );
 
 void CALLBACK_OnRGBDrawFallback() {
-  const RGB_Color_t white = {.r=128,.g=128,.b=128};
+  const RGB_Color_t ttred = {.r=255,.g=0,.b=0};
   const RGB_Color_t red   = {.r=128};
 
   // Clear the channel
@@ -20,18 +20,16 @@ void CALLBACK_OnRGBDrawFallback() {
   // Draw the keys
   for (uint8_t i = 0; i < 7; i++) {
     if (Button_Get(i))
-      RGB_SetRange(0, (i * CONTROLLER_RGB_LEDS_PER_KEY), CONTROLLER_RGB_LEDS_PER_KEY, (i % 2 ? red : white));
+      RGB_SetRange(0, (i * CONTROLLER_RGB_LEDS_PER_KEY), CONTROLLER_RGB_LEDS_PER_KEY, (i % 2 ? red : red));
   }
   // Draw E1-E4, also white
   for (uint8_t i = 0; i < 4; i++) {
     if (Button_Get(7 + i))
-      RGB_Set(0, offsetKeys + i, white);
+      RGB_Set(0, offsetKeys + i, red);
   }
-  // Set saturation and value to max
-  Effect_SetSaturation(255);
-  Effect_SetValue(255);
+
   // Draw the turntable rainbow ring
-  EffectRainbow_Draw(&rainbow, Encoder_PhysicalPercent(0));
+  RGB_SetRange(0, offsetKeys + offsetE, 12, ttred);
 }
 
 void CALLBACK_OnRGBDrawUSB(USB_OutputReport_t *output) {

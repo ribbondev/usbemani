@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define SETTINGS_MAGIC 0x1337d00d
+#define SETTINGS_MAGIC 0x1337b00b
 
 typedef struct {
   uint16_t min[ANALOG_CHANNELS_ACTIVE];
