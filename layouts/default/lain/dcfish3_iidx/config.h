@@ -12,6 +12,12 @@
 #define ENCODER_DIRECTION_THRESHOLD     1
 #define ENCODER_DIRECTION_HOLD_TIMEOUT  100
 
+/*** Lights ***/
+#define LIGHT_CHANNELS  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+
+/*** Buttons ***/
+#define BUTTON_CHANNELS 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+
 /*** RGB ***/
 #define RGB_CHANNELS          0, 1, 2
 #define RGB_FRAMERATE_TARGET  120

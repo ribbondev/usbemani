@@ -5,7 +5,7 @@
 #define CONTROLLER_TYPE iidx
 
 /*** Analogs ***/
-#define ANALOG_CHANNELS_ACTIVE    11
+#define ANALOG_CHANNELS_ACTIVE    7
 #define MUX_S0 5
 #define MUX_S1 4
 #define MUX_S2 3
@@ -27,6 +27,9 @@
 #define RGB_CHANNELS_ACTIVE   3
 #define RGB_LED_TYPE          WS2812
 #define RGB_LEDS_PER_CHANNEL  (7 * CONTROLLER_RGB_LEDS_PER_KEY) + (4 * 7), 12, 12
+
+/*** Lights ***/
+#define LIGHTS_ACTIVE     11
 
 /*** Chain Inclusion ***/
 #include_next "config.h"

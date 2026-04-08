@@ -1,18 +1,17 @@
 #pragma once
 
-#define ANALOG_DRIVER magnetic
-#define ANALOG_CHANNELS_AVAILABLE 11
-
 // Physical analog channel order on mux
-#define ANALOG_CHANNEL_ORDER 5, 6, 11, 7, 10, 8, 9, 15, 14, 13, 12
+#define ANALOG_DRIVER magnetic
+#define ANALOG_CHANNELS_AVAILABLE 7
+#define DUALCONTROL_TRANSISTOR_PINS 24, 23, 25, 22, 26, 21, 27
+#define ANALOG_CHANNEL_ORDER 5, 6, 11, 7, 10, 8, 9
 
-#define BUTTON_DRIVER magnetic
+#define BUTTON_DRIVER dualcontrol
+#define DUALCONTROL
 #define BUTTONS_AVAILABLE 11
+#define BUTTON_PINS 20, 14, 19, 15, 18, 16, 17, 9, 8, 7, 6
 
 // Set button type to DUALCONTROL to switch transistors so lamp holder always gets 5V
-#define MAGNETIC_BUTTON_TYPE DUALCONTROL
-#define DUALCONTROL_TRANSISTOR_PINS 24, 23, 25, 22, 26, 21, 27, 13, 12, 11, 10
-
 #define ENCODER_DRIVER direct
 #define ENCODERS_AVAILABLE 2
 #define ENCODER_PINS [0] = {46, 45}, [1] = {44, 43}
@@ -25,6 +24,10 @@
 #define RGB_CHANNELS_AVAILABLE 3
 #define RGB_PINS 38, 37, 39
 #define RGB_PIO pio0
+
+#define LIGHT_DRIVER direct
+#define LIGHTS_AVAILABLE 11
+#define LIGHT_PINS 33, 33, 33, 33, 33, 33, 33, 10, 11, 12, 13
 
 #define PSX_ACTIVE
 #define PSX_DRIVER          pio

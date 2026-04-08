@@ -33,18 +33,14 @@ int main(void) {
   //DUAL CONTROL button boards need to get GND from the conventional button's GND spade connector. 
   //the transistor connected to GND must be open for it to work (in the conventional implementation)
   //can also be achieved in hardware by jumping switch ground to LED ground
-#if defined (DUALCONTROL_TRANSISTOR_PINS)
-  const uint8_t _DUALCONTROL_TRANSISTOR_PINS[] = { DUALCONTROL_TRANSISTOR_PINS };
-#endif
-
- #if defined(MAGNETIC_BUTTON_TYPE) && (MAGNETIC_BUTTON_TYPE == DUALCONTROL)
-    for (uint8_t i = 0; i < ANALOG_CHANNELS_AVAILABLE; i++) {
+#if defined(DUALCONTROL)
+   const uint8_t _DUALCONTROL_TRANSISTOR_PINS[] = { DUALCONTROL_TRANSISTOR_PINS };
+  for (uint8_t i = 0; i < ANALOG_CHANNELS_AVAILABLE; i++) {
       gpio_init(_DUALCONTROL_TRANSISTOR_PINS[i]);
       gpio_set_dir(_DUALCONTROL_TRANSISTOR_PINS[i], 1);
       gpio_put(_DUALCONTROL_TRANSISTOR_PINS[i], 1);
   }
- #endif
- 
+#endif
 
   Arch_Init();
   Analog_Init();
